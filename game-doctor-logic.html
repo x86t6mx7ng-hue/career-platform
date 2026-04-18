@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Врач — Логика | career.play</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #18181c;
+    --border: #2a2a30;
+    --text: #f0f0f0;
+    --muted: #888;
+    --accent: #3ecf8e;
+    --danger: #f87171;
+    --warning: #fb923c;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  .back-btn {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .back-btn:hover { color: var(--text); }
+
+  /* Timer */
+  .timer-bar-wrap {
+    height: 4px;
+    background: var(--border);
+    width: 100%;
+  }
+  .timer-bar {
+    height: 4px;
+    background: var(--accent);
+    width: 100%;
+    transition: width 1s linear, background 0.3s;
+  }
+
+  .main {
+    flex: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2.5rem 2rem;
+  }
+
+  /* Progress */
+  .progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+  .dot.done { background: var(--accent); }
+  .dot.active { background: var(--accent); box-shadow: 0 0 0 3px rgba(62,207,142,0.2); }
+
+  .timer-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    transition: color 0.3s;
+    min-width: 40px;
+    text-align: right;
+  }
+  .timer-text.warn { color: var(--warning); }
+  .timer-text.danger { color: var(--danger); }
+
+  /* Case card */
+  .case-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .case-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .case-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .symptoms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .symptom {
+    font-size: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    color: var(--muted);
+  }
+
+  /* Answer options */
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .option:hover:not(:disabled) {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .option-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    color: var(--muted);
+  }
+
+  .option-text { font-size: 14px; line-height: 1.5; padding-top: 4px; }
+  .option-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  .option.correct { border-color: var(--accent); background: rgba(62,207,142,0.06); }
+  .option.correct .option-letter { background: var(--accent); border-color: var(--accent); color: #0d0d0f; }
+
+  .option.wrong { border-color: var(--danger); background: rgba(248,113,113,0.06); }
+  .option.wrong .option-letter { background: var(--danger); border-color: var(--danger); color: #0d0d0f; }
+
+  .option:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.good { border-color: var(--accent); }
+  .feedback.bad { border-color: var(--danger); }
+
+  .feedback-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .feedback.good .feedback-title { color: var(--accent); }
+  .feedback.bad .feedback-title { color: var(--danger); }
+
+  .feedback p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #0d0d0f;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: none;
+  }
+  .next-btn.show { display: block; }
+  .next-btn:hover { opacity: 0.85; }
+
+  /* Results screen */
+  .results {
+    display: none;
+    text-align: center;
+    padding: 2rem 0;
+  }
+  .results.show { display: block; }
+
+  .score-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    margin: 0 auto 1.5rem;
+  }
+
+  .score-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .score-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .results h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .results p { font-size: 14px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+
+  .result-breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row span:last-child { color: var(--accent); font-weight: 500; }
+  .result-row.wrong span:last-child { color: var(--danger); }
+
+  .restart-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .restart-btn:hover { background: var(--surface); }
+
+  .game-screen { display: block; }
+  .game-screen.hide { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">career<span>.</span>play</div>
+  <a href="index.html" class="back-btn">← Назад</a>
+</header>
+
+<div class="timer-bar-wrap">
+  <div class="timer-bar" id="timerBar"></div>
+</div>
+
+<div class="main">
+
+  <div class="game-screen" id="gameScreen">
+    <div class="progress">
+      <div class="progress-dots" id="progressDots"></div>
+      <div class="timer-text" id="timerText">60</div>
+    </div>
+
+    <div class="case-card" id="caseCard">
+      <div class="case-label">🏥 Случай <span id="caseNum">1</span> из <span id="caseTotal">3</span></div>
+      <h2 id="caseTitle"></h2>
+      <p id="caseDesc" style="font-size:14px; color:var(--muted); line-height:1.6; margin-top:8px;"></p>
+      <div class="symptoms" id="symptoms"></div>
+    </div>
+
+    <div class="options" id="options"></div>
+
+    <div class="feedback" id="feedback">
+      <div class="feedback-title" id="feedbackTitle"></div>
+      <p id="feedbackText"></p>
+    </div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Следующий случай →</button>
+  </div>
+
+  <div class="results" id="results">
+    <div class="score-circle">
+      <div class="score-num" id="scoreNum">0%</div>
+      <div class="score-label">точность</div>
+    </div>
+    <h2 id="resultsTitle"></h2>
+    <p id="resultsDesc"></p>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <button class="restart-btn" onclick="restart()">Пройти снова</button>
+  </div>
+
+</div>
+
+<script>
+const cases = [
+  {
+    title: "Пациент 34 лет, внезапно потерял сознание",
+    desc: "Мужчина доставлен бригадой скорой помощи. Потеря сознания длилась около 2 минут. Свидетели описывают судороги. В анамнезе — гипертония.",
+    symptoms: ["АД 180/110", "ЧСС 98 уд/мин", "Температура 36.7°C", "Зрачки симметричны", "Без запаха алкоголя"],
+    options: [
+      { text: "Эпилептический приступ", sub: "Назначить противосудорожные, ЭЭГ", correct: true },
+      { text: "Гипогликемия", sub: "Ввести глюкозу внутривенно", correct: false },
+      { text: "Острый инфаркт миокарда", sub: "ЭКГ, аспирин, нитроглицерин", correct: false },
+    ],
+    feedback: {
+      correct: "Верно! Клиническая картина — судороги, потеря сознания — типична для эпилептического приступа. Высокое АД могло спровоцировать приступ. ЭЭГ подтвердит диагноз.",
+      wrong: "Не совсем. Судороги и потеря сознания с симметричными зрачками и без признаков гипогликемии указывают на эпилепсию. Гипертония — провоцирующий фактор."
+    }
+  },
+  {
+    title: "Девочка 8 лет, высокая температура и сыпь",
+    desc: "Родители привезли ребёнка с температурой 39.5°C. Сыпь появилась 6 часов назад, распространяется по телу. Ребёнок вялый, отказывается от еды.",
+    symptoms: ["Т° 39.5°C", "Сыпь везикулярная", "ЧСС 110 уд/мин", "Зев не гиперемирован", "Вакцинирована не полностью"],
+    options: [
+      { text: "Краснуха", sub: "Изоляция, симптоматическое лечение", correct: false },
+      { text: "Ветряная оспа", sub: "Изоляция, ацикловир при тяжёлом течении", correct: true },
+      { text: "Аллергическая реакция", sub: "Антигистаминные, преднизолон", correct: false },
+    ],
+    feedback: {
+      correct: "Правильно! Везикулярная сыпь + высокая температура + неполная вакцинация = классическая ветряная оспа. Изоляция обязательна, ацикловир — при тяжёлом течении.",
+      wrong: "Не верно. Везикулярный характер сыпи отличает ветряную оспу от краснухи (мелкопятнистая) и аллергии (уртикарная). Неполная вакцинация подтверждает диагноз."
+    }
+  },
+  {
+    title: "Мужчина 55 лет, боль в груди при нагрузке",
+    desc: "Пациент жалуется на сжимающую боль за грудиной при подъёме по лестнице. Боль проходит через 3-4 минуты в покое. Курит 20 лет, диабет II типа.",
+    symptoms: ["АД 145/90", "ЧСС 78 уд/мин", "ЭКГ в покое — норма", "Холестерин 6.8 ммоль/л", "Боль при нагрузке"],
+    options: [
+      { text: "Острый инфаркт миокарда", sub: "Экстренная госпитализация, тромболизис", correct: false },
+      { text: "Стабильная стенокардия", sub: "Нитраты, бета-блокаторы, статины", correct: true },
+      { text: "Межрёберная невралгия", sub: "НПВС, физиотерапия", correct: false },
+    ],
+    feedback: {
+      correct: "Верно! Боль при нагрузке, проходящая в покое — классика стабильной стенокардии. Факторы риска: курение, диабет, гиперхолестеринемия. Нитраты + статины обязательны.",
+      wrong: "Не верно. При инфаркте боль не проходит в покое и длится дольше. Невралгия не связана с нагрузкой. Боль при нагрузке + покой = стабильная стенокардия."
+    }
+  }
+];
+
+let current = 0;
+let score = 0;
+let timeLeft = 60;
+let timer = null;
+let answered = false;
+let results = [];
+
+function init() {
+  buildDots();
+  loadCase(0);
+  startTimer();
+}
+
+function buildDots() {
+  const d = document.getElementById('progressDots');
+  d.innerHTML = '';
+  cases.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.id = 'dot-' + i;
+    d.appendChild(dot);
+  });
+}
+
+function updateDots() {
+  cases.forEach((_, i) => {
+    const dot = document.getElementById('dot-' + i);
+    dot.className = 'dot' + (i < current ? ' done' : i === current ? ' active' : '');
+  });
+}
+
+function loadCase(idx) {
+  answered = false;
+  const c = cases[idx];
+  document.getElementById('caseNum').textContent = idx + 1;
+  document.getElementById('caseTotal').textContent = cases.length;
+  document.getElementById('caseTitle').textContent = c.title;
+  document.getElementById('caseDesc').textContent = c.desc;
+
+  const sym = document.getElementById('symptoms');
+  sym.innerHTML = c.symptoms.map(s => `<span class="symptom">${s}</span>`).join('');
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = c.options.map((o, i) => `
+    <button class="option" onclick="answer(${i})" id="opt-${i}">
+      <div class="option-letter">${String.fromCharCode(65+i)}</div>
+      <div>
+        <div class="option-text">${o.text}</div>
+        <div class="option-sub">${o.sub}</div>
+      </div>
+    </button>
+  `).join('');
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').className = 'next-btn';
+  resetTimer();
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timer);
+
+  const c = cases[current];
+  const correct = c.options[idx].correct;
+  const correctIdx = c.options.findIndex(o => o.correct);
+
+  document.querySelectorAll('.option').forEach(b => b.disabled = true);
+  document.getElementById('opt-' + idx).classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) document.getElementById('opt-' + correctIdx).classList.add('correct');
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (correct ? 'good' : 'bad');
+  document.getElementById('feedbackTitle').textContent = correct ? '✓ Правильный диагноз!' : '✗ Не совсем верно';
+  document.getElementById('feedbackText').textContent = correct ? c.feedback.correct : c.feedback.wrong;
+
+  if (correct) score++;
+  results.push({ title: c.title, correct, time: 60 - timeLeft });
+
+  const nb = document.getElementById('nextBtn');
+  nb.className = 'next-btn show';
+  nb.textContent = current < cases.length - 1 ? 'Следующий случай →' : 'Посмотреть результаты →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= cases.length) {
+    showResults();
+  } else {
+    updateDots();
+    loadCase(current);
+    startTimer();
+  }
+}
+
+function startTimer() {
+  timeLeft = 60;
+  updateTimerUI();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      if (!answered) timeOut();
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timer);
+  timeLeft = 60;
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  const pct = (timeLeft / 60) * 100;
+  document.getElementById('timerBar').style.width = pct + '%';
+  document.getElementById('timerText').textContent = timeLeft;
+  const tt = document.getElementById('timerText');
+  if (timeLeft <= 10) { tt.className = 'timer-text danger'; document.getElementById('timerBar').style.background = 'var(--danger)'; }
+  else if (timeLeft <= 20) { tt.className = 'timer-text warn'; document.getElementById('timerBar').style.background = 'var(--warning)'; }
+  else { tt.className = 'timer-text'; document.getElementById('timerBar').style.background = 'var(--accent)'; }
+}
+
+function timeOut() {
+  answered = true;
+  const c = cases[current];
+  const correctIdx = c.options.findIndex(o => o.correct);
+  document.querySelectorAll('.option').forEach(b => b.disabled = true);
+  document.getElementById('opt-' + correctIdx).classList.add('correct');
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show bad';
+  document.getElementById('feedbackTitle').textContent = '⏱ Время вышло!';
+  document.getElementById('feedbackText').textContent = 'Правильный ответ выделен зелёным. Врач должен принимать решения быстро!';
+
+  results.push({ title: c.title, correct: false, time: 60 });
+
+  const nb = document.getElementById('nextBtn');
+  nb.className = 'next-btn show';
+  nb.textContent = current < cases.length - 1 ? 'Следующий случай →' : 'Посмотреть результаты →';
+}
+
+function showResults() {
+  document.getElementById('gameScreen').className = 'game-screen hide';
+  document.getElementById('results').className = 'results show';
+
+  const pct = Math.round((score / cases.length) * 100);
+  document.getElementById('scoreNum').textContent = pct + '%';
+
+  let title, desc;
+  if (pct === 100) { title = 'Блестящий диагност!'; desc = 'Все случаи решены верно. У тебя острый клинический ум — именно так работают лучшие врачи.'; }
+  else if (pct >= 66) { title = 'Хороший результат'; desc = 'Большинство диагнозов правильные. Продолжай учиться — опыт придёт с практикой.'; }
+  else { title = 'Медицина — это сложно'; desc = 'Но именно это делает профессию врача такой важной. Попробуй ещё раз — каждая попытка учит.'; }
+
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsDesc').textContent = desc;
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = results.map(r => `
+    <div class="result-row ${r.correct ? '' : 'wrong'}">
+      <span>${r.title.substring(0, 40)}...</span>
+      <span>${r.correct ? '✓ Верно' : '✗ Неверно'}</span>
+    </div>
+  `).join('');
+}
+
+function restart() {
+  current = 0; score = 0; answered = false; results = [];
+  document.getElementById('gameScreen').className = 'game-screen';
+  document.getElementById('results').className = 'results';
+  buildDots();
+  loadCase(0);
+  startTimer();
+}
+
+init();
+</script>
+</body>
+</html>
