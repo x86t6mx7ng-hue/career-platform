@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Твой первый день дизайнером | career.play</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --border: #24242f;
+  --text: #f0f0f0;
+  --muted: #777;
+  --muted2: #555;
+  --accent: #a78bfa;
+  --pink: #f472b6;
+  --blue: #60a5fa;
+  --green: #34d399;
+  --yellow: #fbbf24;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+nav {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+.logo span { color: var(--accent); }
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+.mood-bar-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.mood-bar { width: 80px; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.mood-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease, background 0.4s; width: 50%; }
+
+.back { font-size: 12px; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--text); }
+
+.wrap { max-width: 620px; margin: 0 auto; padding: 90px 1.5rem 4rem; }
+
+.scene { display: none; animation: fadeUp 0.4s ease forwards; }
+.scene.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.time-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; margin-bottom: 1.25rem;
+}
+.time-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.illus {
+  width: 100%; height: 180px; border-radius: 16px; margin-bottom: 1.5rem;
+  display: flex; align-items: center; justify-content: center; font-size: 72px;
+  position: relative; overflow: hidden; border: 1px solid var(--border);
+}
+.illus-bg { position: absolute; inset: 0; opacity: 0.07; font-size: 120px; display: flex; align-items: center; justify-content: center; filter: blur(8px); }
+
+.narrator { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin-bottom: 8px; }
+
+.story-text { font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.75rem; }
+.story-text em { font-style: normal; color: var(--accent); font-weight: 500; }
+.story-text strong { font-weight: 500; color: #fff; }
+
+.thought {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--pink);
+  border-radius: 0 12px 12px 0; padding: 1rem 1.25rem; margin-bottom: 1.75rem;
+  font-size: 14px; color: #f9a8d4; line-height: 1.6; font-style: italic;
+}
+
+.choice-label { font-size: 12px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+
+.choice {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.1rem 1.25rem; cursor: pointer;
+  transition: border-color 0.15s, transform 0.12s, background 0.15s;
+  text-align: left; width: 100%; display: flex; gap: 14px; align-items: flex-start;
+}
+.choice:hover:not(:disabled) { border-color: rgba(167,139,250,0.4); transform: translateX(6px); background: var(--surface2); }
+.choice-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.choice-main { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.choice-hint { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+.reaction {
+  border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+  font-size: 14px; line-height: 1.6; display: none; border: 1px solid;
+}
+.reaction.show { display: block; animation: fadeUp 0.3s ease forwards; }
+.reaction.warm { background: rgba(167,139,250,0.07); border-color: rgba(167,139,250,0.3); color: #c4b5fd; }
+.reaction.tough { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
+.reaction.mixed { background: rgba(251,191,36,0.07); border-color: rgba(251,191,36,0.3); color: #fde68a; }
+
+.continue-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: none;
+  background: var(--accent); color: #0a0a0f;
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; margin-top: 1rem; transition: opacity 0.15s, transform 0.1s; display: none;
+}
+.continue-btn.show { display: block; }
+.continue-btn:hover { opacity: 0.85; transform: scale(0.99); }
+
+.progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+.pdot { height: 3px; flex: 1; background: var(--border); border-radius: 999px; transition: background 0.4s; }
+.pdot.done { background: var(--accent); }
+.pdot.active { background: rgba(167,139,250,0.5); }
+
+.result-header { text-align: center; padding: 1rem 0 2rem; }
+.big-emoji { font-size: 64px; margin-bottom: 1rem; display: block; }
+.result-header h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.result-header p { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+.traits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 2rem 0; }
+.trait { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+.trait-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+.trait-bar-wrap { height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
+.trait-bar { height: 100%; border-radius: 999px; transition: width 1s ease; }
+.bar-creativity { background: var(--accent); }
+.bar-patience { background: var(--blue); }
+.bar-confidence { background: var(--pink); }
+.bar-focus { background: var(--green); }
+.trait-value { font-size: 13px; font-weight: 500; }
+
+.truth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.truth-box h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--accent); }
+.truth-box p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+.truth-box ul { list-style: none; margin-top: 10px; }
+.truth-box li { font-size: 13px; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.truth-box li:last-child { border-bottom: none; }
+.truth-box li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+.restart-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: transparent; color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.restart-btn:hover { background: var(--surface); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">career<span>.</span>play</div>
+  <div class="nav-right">
+    <div class="mood-bar-wrap">
+      <span>вдохновение</span>
+      <div class="mood-bar"><div class="mood-fill" id="moodFill"></div></div>
+    </div>
+    <a href="index.html" class="back">← выйти</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <div class="scene active" id="s0">
+    <div class="time-chip"><div class="time-dot"></div> 9:00 утра</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a0f2e, #0a0a0f);">
+      <div class="illus-bg">🎨</div>
+      <span style="position:relative;z-index:1;">🎨</span>
+    </div>
+    <div class="narrator">Рассказчик</div>
+    <p class="story-text">
+      Твой первый день в продуктовом стартапе.<br><br>
+      Тебе 24 года. Ты только что прошёл трёхмесячный курс UX-дизайна и собрал портфолио из пяти проектов. Вчера тебя взяли на работу — единственного дизайнера в команде из восьми человек.<br><br>
+      На столе стоит большой монитор, планшет и стакан кофе от коллеги. В Slack уже три непрочитанных сообщения.
+    </p>
+    <div class="thought">
+      "Они думают я знаю что делаю. Надеюсь они правы."
+    </div>
+    <div class="choices">
+      <button class="choice" onclick="goScene('s1')">
+        <span class="choice-icon">💻</span>
+        <div>
+          <div class="choice-main">Открыть ноутбук и начать</div>
+          <div class="choice-hint">Первый день дизайнера</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene" id="s1">
+    <div class="progress">
+      <div class="pdot active"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 10:15 утра · Момент 1 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a1020, #0a0a0f);">
+      <div class="illus-bg">👨‍💼</div>
+      <span style="position:relative;z-index:1;">😤</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      CEO заходит в переговорку и кидает на стол распечатку.<br><br>
+      — Вот наш новый экран регистрации. Я нарисовал ночью в PowerPoint. Просто сделай красиво, ок? К обеду.<br><br>
+      Ты смотришь на распечатку. Там <strong>восемь полей для ввода</strong>, три всплывающих окна и кнопка размером с ноготь. Ни один пользователь не пройдёт дальше второго поля.<br><br>
+      CEO уже уходит.
+    </p>
+    <div class="thought">
+      "Если я просто сделаю это красиво — продукт всё равно будет плохим. Но он мой начальник. И это мой первый день."
+    </div>
+    <div class="choice-label">Что ты делаешь?</div>
+    <div class="choices" id="c1">
+      <button class="choice" onclick="choose(1,'a')">
+        <span class="choice-icon">🗣️</span>
+        <div>
+          <div class="choice-main">Остановить его и объяснить проблему</div>
+          <div class="choice-hint">Показать почему 8 полей убьют конверсию — предложить упростить</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'b')">
+        <span class="choice-icon">🎨</span>
+        <div>
+          <div class="choice-main">Сделать как он просит, но красиво</div>
+          <div class="choice-hint">Первый день — не время спорить с боссом</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'c')">
+        <span class="choice-icon">✏️</span>
+        <div>
+          <div class="choice-main">Сделать два варианта — его и свой</div>
+          <div class="choice-hint">Показать оба и дать ему выбрать</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r1"></div>
+    <button class="continue-btn" id="btn1" onclick="goScene('s2')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene" id="s2">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+      <div class="pdot"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 14:30 дня · Момент 2 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #0f1a20, #0a0a0f);">
+      <div class="illus-bg">👥</div>
+      <span style="position:relative;z-index:1;">😬</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Ты показываешь свой первый дизайн команде на общем созвоне.<br><br>
+      Разработчик Артём смотрит молча. Потом говорит:<br><br>
+      — Слушай, это невозможно реализовать за спринт. Эти анимации — три недели работы минимум. И вот этот шрифт у нас не подключён.<br><br>
+      Все смотрят на тебя. <em>Ты потратил на это пять часов.</em>
+    </p>
+    <div class="thought">
+      "Я не знал про ограничения. Никто мне не сказал. Но сейчас не время оправдываться — все ждут что я скажу."
+    </div>
+    <div class="choice-label">Как ты реагируешь?</div>
+    <div class="choices" id="c2">
+      <button class="choice" onclick="choose(2,'a')">
+        <span class="choice-icon">🤝</span>
+        <div>
+          <div class="choice-main">"Окей, давай упростим вместе"</div>
+          <div class="choice-hint">Сесть с Артёмом прямо сейчас и переработать за 30 минут</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'b')">
+        <span class="choice-icon">🛡️</span>
+        <div>
+          <div class="choice-main">Объяснить что никто не дал техзадание</div>
+          <div class="choice-hint">Это честно — но сейчас все будут защищаться в ответ</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'c')">
+        <span class="choice-icon">⏱️</span>
+        <div>
+          <div class="choice-main">Попросить день чтобы переделать самому</div>
+          <div class="choice-hint">Взять паузу, спокойно всё пересмотреть</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r2"></div>
+    <button class="continue-btn" id="btn2" onclick="goScene('s3')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene" id="s3">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 18:45 вечера · Момент 3 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a1500, #0a0a0f);">
+      <div class="illus-bg">🚀</div>
+      <span style="position:relative;z-index:1;">😰</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Через 15 минут — демо для инвесторов. Стартап показывает продукт впервые.<br><br>
+      Вдруг тебе в Slack пишет разработчик:<br><br>
+      <strong>"Кнопка оплаты не отображается на Android. Половина пользователей её не видит."</strong><br><br>
+      Это твой макет. Ты сделал кнопку белой на светлом фоне — казалось стильно. На iPhone всё выглядело идеально.<br><br>
+      <em>До демо — 15 минут.</em>
+    </p>
+    <div class="thought">
+      "Это моя ошибка. Все узнают. Инвесторы увидят. Можно попытаться исправить — или честно сказать команде прямо сейчас."
+    </div>
+    <div class="choice-label">Что ты делаешь?</div>
+    <div class="choices" id="c3">
+      <button class="choice" onclick="choose(3,'a')">
+        <span class="choice-icon">🚨</span>
+        <div>
+          <div class="choice-main">Сразу написать всей команде</div>
+          <div class="choice-hint">Честно признать ошибку — может успеют что-то сделать</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'b')">
+        <span class="choice-icon">⚡</span>
+        <div>
+          <div class="choice-main">Попытаться исправить самому за 15 минут</div>
+          <div class="choice-hint">Изменить цвет кнопки и попросить задеплоить срочно</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'c')">
+        <span class="choice-icon">🎯</span>
+        <div>
+          <div class="choice-main">Попросить провести демо только с iPhone</div>
+          <div class="choice-hint">На Android не показывать — проблема останется незамеченной</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r3"></div>
+    <button class="continue-btn" id="btn3" onclick="showResult()">Посмотреть итоги →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="scene" id="sResult">
+    <div class="result-header">
+      <span class="big-emoji" id="resultEmoji">🎨</span>
+      <h1 id="resultTitle">Конец первого дня</h1>
+      <p id="resultDesc"></p>
+    </div>
+
+    <div class="traits">
+      <div class="trait">
+        <div class="trait-label">Креативность</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-creativity" id="barCreativity" style="width:0%"></div></div>
+        <div class="trait-value" id="valCreativity">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Терпение</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-patience" id="barPatience" style="width:0%"></div></div>
+        <div class="trait-value" id="valPatience">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Уверенность</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-confidence" id="barConfidence" style="width:0%"></div></div>
+        <div class="trait-value" id="valConfidence">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Фокус</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-focus" id="barFocus" style="width:0%"></div></div>
+        <div class="trait-value" id="valFocus">—</div>
+      </div>
+    </div>
+
+    <div class="truth-box">
+      <h3>🔍 Что на самом деле делают дизайнеры</h3>
+      <ul>
+        <li>70% работы — это переговоры и объяснения, а не рисование</li>
+        <li>Каждый дизайн переделывают минимум три раза</li>
+        <li>Ошибки — часть профессии. Важно как ты на них реагируешь</li>
+        <li>Хороший дизайнер думает о пользователе, а не о красоте</li>
+        <li>Самое сложное — убедить других что простота лучше сложности</li>
+      </ul>
+    </div>
+
+    <div class="truth-box">
+      <h3 id="fitTitle">💭 Подходит ли тебе эта профессия?</h3>
+      <p id="fitText"></p>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">Пройти заново</button>
+  </div>
+
+</div>
+
+<script>
+let choices = {};
+let creativity = 50, patience = 50, confidence = 50, focus = 50;
+let mood = 50;
+
+function updateMood() {
+  const fill = document.getElementById('moodFill');
+  fill.style.width = mood + '%';
+  if (mood > 65) fill.style.background = 'var(--accent)';
+  else if (mood > 40) fill.style.background = 'var(--yellow)';
+  else fill.style.background = '#f87171';
+}
+
+function goScene(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const reactions = {
+  1: {
+    a: { type: 'warm', text: '🗣️ Ты догнал CEO в коридоре. Показал на телефоне три примера форм с высокой конверсией — все простые. Он помолчал. Потом сказал: "Окей. Сделай три поля. Но к обеду." Ты выдохнул. Это было страшно — но ты был прав.', creativity: +10, patience: +5, confidence: +20, focus: +10, mood: +15 },
+    b: { type: 'mixed', text: '🎨 Ты сделал красиво. Восемь полей, идеальные отступы, правильные цвета. CEO доволен. Но через неделю аналитика покажет: 90% пользователей бросают регистрацию на третьем поле. Ты знал это с самого начала.', creativity: +15, patience: +10, confidence: -10, focus: +5, mood: -10 },
+    c: { type: 'warm', text: '✏️ Два варианта заняли чуть больше времени. Но когда CEO увидел оба — сразу выбрал твой упрощённый. "Вот это да, так намного чище." Иногда лучший способ убедить — просто показать.', creativity: +20, patience: +10, confidence: +15, focus: +15, mood: +20 }
+  },
+  2: {
+    a: { type: 'warm', text: '🤝 Вы с Артёмом потратили 40 минут. Убрали анимации, заменили шрифт на системный, упростили три экрана. Получилось даже лаконичнее. Артём сказал: "Слушай, так вообще лучше." Команда расслабилась.', creativity: +5, patience: +15, confidence: +15, focus: +20, mood: +20 },
+    b: { type: 'tough', text: '🛡️ Ты был прав — но все начали защищаться. Тимлид сказал что надо было спросить заранее. CEO поморщился. Правда есть правда, но момент для неё выбран неудачно. Напряжение осталось.', creativity: 0, patience: -10, confidence: +5, focus: -5, mood: -15 },
+    c: { type: 'mixed', text: '⏱️ Ты взял паузу. Переделал спокойно, всё учёл. Дизайн стал лучше. Но команда потеряла день. В стартапе время — это деньги. Иногда "хорошо и быстро" важнее чем "идеально и завтра".', creativity: +10, patience: +20, confidence: 0, focus: +10, mood: 0 }
+  },
+  3: {
+    a: { type: 'warm', text: '🚨 Ты написал в общий чат: "Нашёл баг в своём макете, кнопка не видна на Android. Вот фикс — нужно задеплоить." За 12 минут разработчик успел исправить. Демо прошло чисто. После CEO подошёл: "Хорошо что поймал. Молодец."', creativity: +5, patience: +10, confidence: +20, focus: +20, mood: +25 },
+    b: { type: 'warm', text: '⚡ Ты действовал быстро. Поменял цвет, написал разработчику, попросил задеплоить hotfix. Не успели на 3 минуты — но демо начали чуть позже. Инвесторы не заметили. Команда оценила твою скорость реакции.', creativity: +10, patience: +5, confidence: +15, focus: +25, mood: +15 },
+    c: { type: 'tough', text: '🎯 Демо прошло на iPhone — красиво. Но один из инвесторов достал свой Android и захотел попробовать сам. Кнопки не было. Неловкая пауза. Потом всё объяснили — но осадок остался. Скрывать баги дороже чем признавать.', creativity: 0, patience: 0, confidence: -20, focus: -10, mood: -20 }
+  }
+};
+
+function choose(scene, opt) {
+  choices[scene] = opt;
+  const r = reactions[scene][opt];
+
+  creativity = Math.min(100, Math.max(0, creativity + r.creativity));
+  patience = Math.min(100, Math.max(0, patience + r.patience));
+  confidence = Math.min(100, Math.max(0, confidence + r.confidence));
+  focus = Math.min(100, Math.max(0, focus + r.focus));
+  mood = Math.min(100, Math.max(0, mood + r.mood));
+  updateMood();
+
+  document.querySelectorAll(`#c${scene} .choice`).forEach(b => b.disabled = true);
+
+  const reactionEl = document.getElementById(`r${scene}`);
+  reactionEl.className = `reaction show ${r.type}`;
+  reactionEl.textContent = r.text;
+
+  document.getElementById(`btn${scene}`).classList.add('show');
+  reactionEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showResult() {
+  goScene('sResult');
+
+  setTimeout(() => {
+    document.getElementById('barCreativity').style.width = creativity + '%';
+    document.getElementById('barPatience').style.width = patience + '%';
+    document.getElementById('barConfidence').style.width = confidence + '%';
+    document.getElementById('barFocus').style.width = focus + '%';
+    document.getElementById('valCreativity').textContent = creativity + '%';
+    document.getElementById('valPatience').textContent = patience + '%';
+    document.getElementById('valConfidence').textContent = confidence + '%';
+    document.getElementById('valFocus').textContent = focus + '%';
+  }, 300);
+
+  let emoji, title, desc, fitText;
+
+  if (confidence >= 65 && creativity >= 60) {
+    emoji = '🌟'; title = 'Дизайнер-лидер';
+    desc = 'Ты не просто рисуешь — ты отстаиваешь свои решения и берёшь ответственность. Именно такие дизайнеры меняют продукты.';
+    fitText = 'Ты проявил уверенность и творческий подход одновременно. Профессия дизайнера тебе подойдёт — особенно в роли product designer или арт-директора. Тебе нравится влиять на продукт целиком, а не просто выполнять задания.';
+  } else if (creativity >= 65) {
+    emoji = '🎨'; title = 'Творческая душа';
+    desc = 'У тебя богатое воображение и чувство красоты. Дизайн для тебя — это способ выразить себя.';
+    fitText = 'Тебе может подойти графический дизайн, иллюстрация или motion-дизайн — там меньше переговоров и больше творчества. UX-дизайн тоже возможен, но придётся научиться работать в команде под давлением.';
+  } else if (focus >= 65 && patience >= 60) {
+    emoji = '🔧'; title = 'Дизайнер-систематик';
+    desc = 'Ты внимателен к деталям, терпелив и методичен. Твои дизайны надёжны и продуманы.';
+    fitText = 'Тебе подойдёт UI-дизайн, дизайн систем или работа с типографикой. Ты силён там где нужна аккуратность и последовательность — это редкое и ценное качество.';
+  } else {
+    emoji = '🤔'; title = 'День был насыщенным';
+    desc = 'Много неожиданного, много давления. Дизайн — это не только красота, это ещё и люди, конфликты, дедлайны.';
+    fitText = 'Если тебе было тяжело от критики и давления — возможно дизайн в стартапе не твоё. Но если внутри всё равно хотелось сделать красиво и правильно — это важный сигнал. Попробуй freelance или более спокойную среду.';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('fitText').textContent = fitText;
+}
+
+function restart() {
+  choices = {};
+  creativity = 50; patience = 50; confidence = 50; focus = 50; mood = 50;
+  updateMood();
+  document.querySelectorAll('.choice').forEach(b => b.disabled = false);
+  document.querySelectorAll('.reaction').forEach(r => r.className = 'reaction');
+  document.querySelectorAll('.continue-btn').forEach(b => b.className = 'continue-btn');
+  goScene('s0');
+}
+
+updateMood();
+</script>
+</body>
+</html>

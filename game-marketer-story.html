@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Твой первый день маркетологом | career.play</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f0a00;
+  --surface: #1a1200;
+  --surface2: #221800;
+  --border: #2e2200;
+  --text: #f0f0f0;
+  --muted: #777;
+  --muted2: #555;
+  --accent: #fb923c;
+  --yellow: #fbbf24;
+  --green: #34d399;
+  --red: #f87171;
+  --blue: #60a5fa;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+nav {
+  padding: 1.25rem 1.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(15,10,0,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+.logo span { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.mood-bar-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.mood-bar { width: 80px; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.mood-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease, background 0.4s; width: 50%; }
+.back { font-size: 12px; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--text); }
+
+.wrap { max-width: 620px; margin: 0 auto; padding: 90px 1.5rem 4rem; }
+
+.scene { display: none; animation: fadeUp 0.4s ease forwards; }
+.scene.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.time-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; margin-bottom: 1.25rem;
+}
+.time-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.illus {
+  width: 100%; height: 180px; border-radius: 16px; margin-bottom: 1.5rem;
+  display: flex; align-items: center; justify-content: center; font-size: 72px;
+  position: relative; overflow: hidden; border: 1px solid var(--border);
+}
+.illus-bg { position: absolute; inset: 0; opacity: 0.07; font-size: 120px; display: flex; align-items: center; justify-content: center; filter: blur(8px); }
+
+.narrator { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin-bottom: 8px; }
+.story-text { font-size: 1.05rem; line-height: 1.8; color: var(--text); margin-bottom: 1.75rem; }
+.story-text em { font-style: normal; color: var(--accent); font-weight: 500; }
+.story-text strong { font-weight: 500; color: #fff; }
+
+.thought {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--yellow);
+  border-radius: 0 12px 12px 0; padding: 1rem 1.25rem; margin-bottom: 1.75rem;
+  font-size: 14px; color: #fde68a; line-height: 1.6; font-style: italic;
+}
+
+.choice-label { font-size: 12px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+
+.choice {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.1rem 1.25rem; cursor: pointer;
+  transition: border-color 0.15s, transform 0.12s, background 0.15s;
+  text-align: left; width: 100%; display: flex; gap: 14px; align-items: flex-start;
+}
+.choice:hover:not(:disabled) { border-color: rgba(251,146,60,0.4); transform: translateX(6px); background: var(--surface2); }
+.choice-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.choice-main { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.choice-hint { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+.reaction {
+  border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+  font-size: 14px; line-height: 1.6; display: none; border: 1px solid;
+}
+.reaction.show { display: block; animation: fadeUp 0.3s ease forwards; }
+.reaction.warm { background: rgba(251,146,60,0.07); border-color: rgba(251,146,60,0.3); color: #fdba74; }
+.reaction.tough { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
+.reaction.mixed { background: rgba(251,191,36,0.07); border-color: rgba(251,191,36,0.3); color: #fde68a; }
+
+.continue-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: none;
+  background: var(--accent); color: #0f0a00;
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; margin-top: 1rem; transition: opacity 0.15s, transform 0.1s; display: none;
+}
+.continue-btn.show { display: block; }
+.continue-btn:hover { opacity: 0.85; transform: scale(0.99); }
+
+.progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+.pdot { height: 3px; flex: 1; background: var(--border); border-radius: 999px; transition: background 0.4s; }
+.pdot.done { background: var(--accent); }
+.pdot.active { background: rgba(251,146,60,0.5); }
+
+.result-header { text-align: center; padding: 1rem 0 2rem; }
+.big-emoji { font-size: 64px; margin-bottom: 1rem; display: block; }
+.result-header h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.result-header p { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+.traits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 2rem 0; }
+.trait { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+.trait-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+.trait-bar-wrap { height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
+.trait-bar { height: 100%; border-radius: 999px; transition: width 1s ease; }
+.bar-persuasion { background: var(--accent); }
+.bar-analytics { background: var(--blue); }
+.bar-risk { background: var(--yellow); }
+.bar-resilience { background: var(--green); }
+.trait-value { font-size: 13px; font-weight: 500; }
+
+.truth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.truth-box h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--accent); }
+.truth-box p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+.truth-box ul { list-style: none; margin-top: 10px; }
+.truth-box li { font-size: 13px; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.truth-box li:last-child { border-bottom: none; }
+.truth-box li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+.restart-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: transparent; color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.restart-btn:hover { background: var(--surface); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">career<span>.</span>play</div>
+  <div class="nav-right">
+    <div class="mood-bar-wrap">
+      <span>энергия</span>
+      <div class="mood-bar"><div class="mood-fill" id="moodFill"></div></div>
+    </div>
+    <a href="index.html" class="back">← выйти</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <div class="scene active" id="s0">
+    <div class="time-chip"><div class="time-dot"></div> 8:45 утра</div>
+    <div class="illus" style="background: linear-gradient(135deg, #2a1500, #0f0a00);">
+      <div class="illus-bg">📊</div>
+      <span style="position:relative;z-index:1;">📊</span>
+    </div>
+    <div class="narrator">Рассказчик</div>
+    <p class="story-text">
+      Первый день в маркетинговом агентстве.<br><br>
+      Тебе 23 года. Ты прошёл стажировку, вёл Instagram небольшого кафе и уговорил их сделать первую рекламу. Теперь ты junior маркетолог — и у тебя <em>настоящий бюджет</em>.<br><br>
+      На столе — ноутбук, блокнот и листок с заданием: запустить рекламную кампанию для нового приложения по доставке еды. Бюджет — <strong>$5,000</strong>. Срок — две недели.
+    </p>
+    <div class="thought">
+      "Пять тысяч долларов. Это больше чем я зарабатывал за год. И я должен их правильно потратить."
+    </div>
+    <div class="choices">
+      <button class="choice" onclick="goScene('s1')">
+        <span class="choice-icon">📱</span>
+        <div>
+          <div class="choice-main">Открыть рекламный кабинет</div>
+          <div class="choice-hint">Начать свою первую кампанию</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene" id="s1">
+    <div class="progress">
+      <div class="pdot active"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 10:00 утра · Момент 1 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a1000, #0f0a00);">
+      <div class="illus-bg">🎯</div>
+      <span style="position:relative;z-index:1;">🎯</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Нужно выбрать аудиторию для рекламы. Приложение — доставка еды, средний чек $15.<br><br>
+      Руководитель говорит: <strong>"Бей на всех, 18–45 лет, весь город."</strong><br><br>
+      Но ты смотришь на данные конкурентов. Их лучший сегмент — <em>офисные работники 25–34</em>, обедающие в одиночку. Узкая аудитория, но конверсия в три раза выше.<br><br>
+      Бюджет один. Переделать потом не получится.
+    </p>
+    <div class="thought">
+      "Широкая аудитория — безопаснее на первый взгляд. Но данные говорят другое. Кому верить — боссу или цифрам?"
+    </div>
+    <div class="choice-label">Как настраиваешь аудиторию?</div>
+    <div class="choices" id="c1">
+      <button class="choice" onclick="choose(1,'a')">
+        <span class="choice-icon">📊</span>
+        <div>
+          <div class="choice-main">Доверять данным — узкий сегмент</div>
+          <div class="choice-hint">Объяснить боссу логику и настроить на офисников 25–34</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'b')">
+        <span class="choice-icon">🌍</span>
+        <div>
+          <div class="choice-main">Слушать руководителя — широкая аудитория</div>
+          <div class="choice-hint">Он знает рынок лучше — первый раз лучше не рисковать</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'c')">
+        <span class="choice-icon">⚖️</span>
+        <div>
+          <div class="choice-main">Разделить бюджет — протестировать оба</div>
+          <div class="choice-hint">$3000 на узкий, $2000 на широкий — данные покажут кто прав</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r1"></div>
+    <button class="continue-btn" id="btn1" onclick="goScene('s2')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene" id="s2">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+      <div class="pdot"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 15:00 дня · Момент 2 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a0a00, #0f0a00);">
+      <div class="illus-bg">📞</div>
+      <span style="position:relative;z-index:1;">😤</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Звонит клиент — владелец приложения. Он злой.<br><br>
+      — Я смотрю на рекламу в Instagram. Там написано "быстрая доставка". Но у нас среднее время — <strong>55 минут</strong>. Это не быстро! Кто это написал?<br><br>
+      Ты смотришь в файл. Это написал твой коллега Дима. Но файл согласовывал ты — поставил галочку не читая, потому что торопился.<br><br>
+      <em>Технически виноват Дима. Но ты подписал.</em>
+    </p>
+    <div class="thought">
+      "Если скажу что это Дима — он получит по шапке. Если возьму на себя — придётся объяснять боссу. Если замолчу — клиент будет злиться дальше."
+    </div>
+    <div class="choice-label">Что говоришь клиенту?</div>
+    <div class="choices" id="c2">
+      <button class="choice" onclick="choose(2,'a')">
+        <span class="choice-icon">🙋</span>
+        <div>
+          <div class="choice-main">"Это моя ошибка — я не проверил"</div>
+          <div class="choice-hint">Взять ответственность и предложить исправить текст прямо сейчас</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'b')">
+        <span class="choice-icon">👉</span>
+        <div>
+          <div class="choice-main">"Это написал коллега, сейчас разберёмся"</div>
+          <div class="choice-hint">Честно объяснить кто автор и как это произошло</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'c')">
+        <span class="choice-icon">🔄</span>
+        <div>
+          <div class="choice-main">"Мы уже меняем формулировку"</div>
+          <div class="choice-hint">Не объяснять кто виноват — просто решить проблему</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r2"></div>
+    <button class="continue-btn" id="btn2" onclick="goScene('s3')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene" id="s3">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 19:20 вечера · Момент 3 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #001a0a, #0f0a00);">
+      <div class="illus-bg">📈</div>
+      <span style="position:relative;z-index:1;">😱</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Первые результаты за три дня. Ты открываешь аналитику.<br><br>
+      Реклама показана <strong>180,000 раз</strong>. Кликов — <strong>320</strong>. Установок приложения — <strong>11</strong>.<br><br>
+      Это катастрофа. Потрачено уже $1,200 — и почти ноль результата.<br><br>
+      Завтра встреча с клиентом. Он спросит про результаты. У тебя ещё $3,800 бюджета и <strong>11 дней</strong>.
+    </p>
+    <div class="thought">
+      "Можно сказать что ещё рано делать выводы. Можно честно показать цифры. Можно срочно всё переделать и прийти уже с новым планом."
+    </div>
+    <div class="choice-label">Что делаешь до встречи?</div>
+    <div class="choices" id="c3">
+      <button class="choice" onclick="choose(3,'a')">
+        <span class="choice-icon">🔍</span>
+        <div>
+          <div class="choice-main">Провести ночь в аналитике и прийти с новым планом</div>
+          <div class="choice-hint">Найти что пошло не так — и показать клиенту конкретное решение</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'b')">
+        <span class="choice-icon">📉</span>
+        <div>
+          <div class="choice-main">Честно показать цифры без прикрас</div>
+          <div class="choice-hint">Сказать "кампания не работает, вот почему, вот что предлагаю"</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'c')">
+        <span class="choice-icon">⏳</span>
+        <div>
+          <div class="choice-main">Сказать что ещё рано — нужно больше данных</div>
+          <div class="choice-hint">Три дня — маленький срок, алгоритмы ещё обучаются</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r3"></div>
+    <button class="continue-btn" id="btn3" onclick="showResult()">Посмотреть итоги →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="scene" id="sResult">
+    <div class="result-header">
+      <span class="big-emoji" id="resultEmoji">📊</span>
+      <h1 id="resultTitle">Конец первого дня</h1>
+      <p id="resultDesc"></p>
+    </div>
+
+    <div class="traits">
+      <div class="trait">
+        <div class="trait-label">Убеждение</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-persuasion" id="barPersuasion" style="width:0%"></div></div>
+        <div class="trait-value" id="valPersuasion">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Аналитика</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-analytics" id="barAnalytics" style="width:0%"></div></div>
+        <div class="trait-value" id="valAnalytics">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Смелость</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-risk" id="barRisk" style="width:0%"></div></div>
+        <div class="trait-value" id="valRisk">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Стойкость</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-resilience" id="barResilience" style="width:0%"></div></div>
+        <div class="trait-value" id="valResilience">—</div>
+      </div>
+    </div>
+
+    <div class="truth-box">
+      <h3>🔍 Что на самом деле делают маркетологи</h3>
+      <ul>
+        <li>Большинство кампаний проваливаются с первого раза — это норма</li>
+        <li>Данные важнее интуиции — но интуицию тоже надо развивать</li>
+        <li>Клиенты злятся — это часть работы, не личное оскорбление</li>
+        <li>Лучший маркетолог тот, кто умеет признать ошибку и исправить</li>
+        <li>Один удачный тест стоит больше красивой презентации</li>
+      </ul>
+    </div>
+
+    <div class="truth-box">
+      <h3 id="fitTitle">💭 Подходит ли тебе эта профессия?</h3>
+      <p id="fitText"></p>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">Пройти заново</button>
+  </div>
+
+</div>
+
+<script>
+let choices = {};
+let persuasion = 50, analytics = 50, risk = 50, resilience = 50;
+let mood = 50;
+
+function updateMood() {
+  const fill = document.getElementById('moodFill');
+  fill.style.width = mood + '%';
+  if (mood > 65) fill.style.background = 'var(--accent)';
+  else if (mood > 40) fill.style.background = 'var(--yellow)';
+  else fill.style.background = '#f87171';
+}
+
+function goScene(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const reactions = {
+  1: {
+    a: { type: 'warm', text: '📊 Ты показал боссу таблицу с данными конкурентов. Он смотрел молча минуту. "Окей, твои деньги — твоя ответственность." Через две недели конверсия оказалась в 2.8 раза выше плана. Данные не врут.', persuasion: +15, analytics: +20, risk: +20, resilience: +10, mood: +20 },
+    b: { type: 'mixed', text: '🌍 Широкая аудитория. Охват огромный — 200,000 показов. Но цена клика высокая, конверсия низкая. Деньги потрачены равномерно и... посредственно. Иногда безопасный выбор — это самый дорогой выбор.', persuasion: +5, analytics: -5, risk: -10, resilience: +10, mood: -10 },
+    c: { type: 'warm', text: '⚖️ Через неделю данные чёткие: узкий сегмент конвертирует в 3 раза лучше. Ты перебросил остаток бюджета туда. Босс смотрит на цифры: "Неплохо думаешь." Тест — это не трата денег, это покупка знания.', persuasion: +10, analytics: +25, risk: +15, resilience: +15, mood: +15 }
+  },
+  2: {
+    a: { type: 'warm', text: '🙋 "Это моя ошибка — я согласовал не глядя. Уже исправляю." Клиент помолчал. Потом сказал: "Ладно. Ценю честность." Дима потом сказал тебе спасибо. Ответственность — это не слабость.', persuasion: +20, analytics: +5, risk: +10, resilience: +20, mood: +15 },
+    b: { type: 'mixed', text: '👉 Клиент выслушал. Дима получил выговор. Формально всё правильно. Но в офисе стало холоднее — коллеги это заметили. Правда бывает дорогой.', persuasion: +5, analytics: 0, risk: +5, resilience: +5, mood: -10 },
+    c: { type: 'warm', text: '🔄 "Меняем прямо сейчас — через час будет новый текст." Клиент успокоился. Проблема решена без разбора полётов. Иногда скорость решения важнее поиска виноватых.', persuasion: +15, analytics: +5, risk: +5, resilience: +15, mood: +10 }
+  },
+  3: {
+    a: { type: 'warm', text: '🔍 Ты не спал до часа ночи. Нашёл проблему: объявления показывались людям без смартфонов — они физически не могли скачать приложение. Элементарная ошибка в настройках. На встрече ты показал проблему и готовый фикс. Клиент выдохнул. "Вот это профессионально."', persuasion: +20, analytics: +25, risk: +15, resilience: +20, mood: +25 },
+    b: { type: 'warm', text: '📉 Ты пришёл с честными цифрами и тремя гипотезами почему не работает. Клиент сначала нахмурился. Потом сказал: "Хорошо что не пытался скрыть. Давай пробуй гипотезу номер два." Доверие дороже красивых слайдов.', persuasion: +15, analytics: +15, risk: +10, resilience: +25, mood: +15 },
+    c: { type: 'tough', text: '⏳ "Три дня — мало, алгоритмы обучаются." Клиент кивнул. Но через неделю цифры не выросли. И тогда он уже не был таким мягким. Оправдание купило время — но не результат.', persuasion: -5, analytics: -10, risk: -15, resilience: +5, mood: -15 }
+  }
+};
+
+function choose(scene, opt) {
+  choices[scene] = opt;
+  const r = reactions[scene][opt];
+
+  persuasion = Math.min(100, Math.max(0, persuasion + r.persuasion));
+  analytics = Math.min(100, Math.max(0, analytics + r.analytics));
+  risk = Math.min(100, Math.max(0, risk + r.risk));
+  resilience = Math.min(100, Math.max(0, resilience + r.resilience));
+  mood = Math.min(100, Math.max(0, mood + r.mood));
+  updateMood();
+
+  document.querySelectorAll(`#c${scene} .choice`).forEach(b => b.disabled = true);
+
+  const reactionEl = document.getElementById(`r${scene}`);
+  reactionEl.className = `reaction show ${r.type}`;
+  reactionEl.textContent = r.text;
+
+  document.getElementById(`btn${scene}`).classList.add('show');
+  reactionEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showResult() {
+  goScene('sResult');
+
+  setTimeout(() => {
+    document.getElementById('barPersuasion').style.width = persuasion + '%';
+    document.getElementById('barAnalytics').style.width = analytics + '%';
+    document.getElementById('barRisk').style.width = risk + '%';
+    document.getElementById('barResilience').style.width = resilience + '%';
+    document.getElementById('valPersuasion').textContent = persuasion + '%';
+    document.getElementById('valAnalytics').textContent = analytics + '%';
+    document.getElementById('valRisk').textContent = risk + '%';
+    document.getElementById('valResilience').textContent = resilience + '%';
+  }, 300);
+
+  let emoji, title, desc, fitText;
+
+  if (analytics >= 65 && resilience >= 65) {
+    emoji = '🚀'; title = 'Маркетолог-стратег';
+    desc = 'Ты думаешь цифрами и не ломаешься под давлением. Именно такие люди строят успешные кампании.';
+    fitText = 'Тебе подойдёт performance-маркетинг, аналитика или growth hacking — там нужны именно твои качества. Ты умеешь держать голову холодной когда всё идёт не по плану.';
+  } else if (persuasion >= 65) {
+    emoji = '🎤'; title = 'Маркетолог-коммуникатор';
+    desc = 'Ты умеешь убеждать, брать ответственность и выстраивать отношения. Клиенты тебе доверяют.';
+    fitText = 'Тебе подойдёт account management, бренд-маркетинг или работа с инфлюенсерами. Ты силён в людях — используй это как главный инструмент.';
+  } else if (risk >= 65) {
+    emoji = '⚡'; title = 'Маркетолог-экспериментатор';
+    desc = 'Ты не боишься рисковать и проверять гипотезы. Именно такие люди находят нестандартные решения.';
+    fitText = 'Тебе подойдёт startup-маркетинг, запуск новых продуктов или SMM где нужна смелость и скорость. Главное — научиться анализировать результаты своих экспериментов.';
+  } else {
+    emoji = '🤔'; title = 'День был непростым';
+    desc = 'Маркетинг — это давление, цифры и недовольные клиенты. Не всем это подходит — и это нормально.';
+    fitText = 'Если тебе было некомфортно от неопределённости и провальных цифр — возможно стоит присмотреться к более предсказуемым профессиям. Но если азарт "как это исправить?" был сильнее страха — маркетинг может стать твоим.';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('fitText').textContent = fitText;
+}
+
+function restart() {
+  choices = {};
+  persuasion = 50; analytics = 50; risk = 50; resilience = 50; mood = 50;
+  updateMood();
+  document.querySelectorAll('.choice').forEach(b => b.disabled = false);
+  document.querySelectorAll('.reaction').forEach(r => r.className = 'reaction');
+  document.querySelectorAll('.continue-btn').forEach(b => b.className = 'continue-btn');
+  goScene('s0');
+}
+
+updateMood();
+</script>
+</body>
+</html>
