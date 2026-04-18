@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Твой первый день врачом | career.play</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0c;
+  --surface: #141418;
+  --surface2: #1c1c22;
+  --border: #26262e;
+  --text: #f0f0f0;
+  --muted: #777;
+  --muted2: #555;
+  --accent: #3ecf8e;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,12,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+.logo span { color: var(--accent); }
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+.mood-bar-wrap {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--muted);
+}
+
+.mood-bar {
+  width: 80px; height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mood-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.6s ease, background 0.4s;
+  width: 50%;
+}
+
+.back { font-size: 12px; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--text); }
+
+/* MAIN */
+.wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 90px 1.5rem 4rem;
+}
+
+/* SCENE */
+.scene { display: none; animation: fadeUp 0.4s ease forwards; }
+.scene.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* TIME CHIP */
+.time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 1.25rem;
+}
+
+.time-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ILLUSTRATION */
+.illus {
+  width: 100%;
+  height: 180px;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.illus-bg {
+  position: absolute; inset: 0;
+  opacity: 0.07;
+  font-size: 120px;
+  display: flex; align-items: center; justify-content: center;
+  filter: blur(8px);
+}
+
+/* NARRATIVE */
+.narrator {
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.story-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 1.75rem;
+}
+
+.story-text em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.story-text strong {
+  font-weight: 500;
+  color: #fff;
+}
+
+/* THOUGHT BOX */
+.thought {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+  font-size: 14px;
+  color: #c4b5fd;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* CHOICES */
+.choice-label {
+  font-size: 12px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.choices { display: flex; flex-direction: column; gap: 10px; }
+
+.choice {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.12s, background 0.15s;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.choice:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateX(6px);
+  background: var(--surface2);
+}
+
+.choice-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.choice-main { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.choice-hint { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+/* REACTION FLASH */
+.reaction {
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  line-height: 1.6;
+  display: none;
+  border: 1px solid;
+}
+
+.reaction.show { display: block; animation: fadeUp 0.3s ease forwards; }
+.reaction.warm { background: rgba(62,207,142,0.07); border-color: rgba(62,207,142,0.3); color: #6ee7b7; }
+.reaction.tough { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
+.reaction.mixed { background: rgba(251,191,36,0.07); border-color: rgba(251,191,36,0.3); color: #fde68a; }
+
+.continue-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: #0a0a0c;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: opacity 0.15s, transform 0.1s;
+  display: none;
+}
+.continue-btn.show { display: block; }
+.continue-btn:hover { opacity: 0.85; transform: scale(0.99); }
+
+/* RESULT */
+.result-header {
+  text-align: center;
+  padding: 1rem 0 2rem;
+}
+
+.big-emoji { font-size: 64px; margin-bottom: 1rem; display: block; }
+
+.result-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.result-header p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.traits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 2rem 0;
+}
+
+.trait {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.trait-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.trait-bar-wrap {
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.trait-bar { height: 100%; border-radius: 999px; transition: width 1s ease; }
+.bar-empathy { background: var(--purple); }
+.bar-calm { background: var(--blue); }
+.bar-decision { background: var(--accent); }
+.bar-stress { background: var(--yellow); }
+
+.trait-value { font-size: 13px; font-weight: 500; }
+
+.truth-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.truth-box h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+
+.truth-box p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.truth-box ul {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.truth-box li {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.truth-box li:last-child { border-bottom: none; }
+.truth-box li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+.restart-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.restart-btn:hover { background: var(--surface); }
+
+/* PROGRESS DOTS */
+.progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.pdot {
+  height: 3px;
+  flex: 1;
+  background: var(--border);
+  border-radius: 999px;
+  transition: background 0.4s;
+}
+.pdot.done { background: var(--accent); }
+.pdot.active { background: rgba(62,207,142,0.5); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">career<span>.</span>play</div>
+  <div class="nav-right">
+    <div class="mood-bar-wrap">
+      <span id="moodLabel">настроение</span>
+      <div class="mood-bar"><div class="mood-fill" id="moodFill"></div></div>
+    </div>
+    <a href="index.html" class="back">← выйти</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <div class="scene active" id="s0">
+    <div class="time-chip"><div class="time-dot"></div> 7:45 утра</div>
+    <div class="illus" style="background: linear-gradient(135deg, #0f1f18, #0a0a0c);">
+      <div class="illus-bg">🏥</div>
+      <span style="position:relative; z-index:1;">🩺</span>
+    </div>
+    <div class="narrator">Рассказчик</div>
+    <p class="story-text">
+      Сегодня твой <em>первый рабочий день</em> в городской больнице.<br><br>
+      Тебе 26 лет. Ты только что окончил медицинский университет. Шесть лет учёбы, тысячи страниц учебников — и вот ты здесь, в белом халате, с именным бейджиком.<br><br>
+      Коридор пахнет антисептиком. Где-то капает капельница. Медсестра на посту смотрит на тебя поверх очков.
+    </p>
+    <div class="thought">
+      "Вот оно. Я готовился к этому шесть лет. Почему же так страшно?"
+    </div>
+    <div class="choices">
+      <button class="choice" onclick="startStory()">
+        <span class="choice-icon">🚪</span>
+        <div>
+          <div class="choice-main">Войти в отделение</div>
+          <div class="choice-hint">Начать свой первый день</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene" id="s1">
+    <div class="progress">
+      <div class="pdot active" id="p0"></div>
+      <div class="pdot" id="p1"></div>
+      <div class="pdot" id="p2"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 8:10 утра · Момент 1 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a0f0f, #0a0a0c);">
+      <div class="illus-bg">👴</div>
+      <span style="position:relative; z-index:1;">👴</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Первый пациент — <strong>дедушка Николай, 78 лет</strong>. Он лежит в палате уже три дня. Завтра его выписывают.<br><br>
+      Когда ты заходишь, он не смотрит на тебя. Смотрит в окно. На улице идёт дождь.<br><br>
+      — Доктор, — говорит он тихо, — мне страшно возвращаться домой. Я живу один.
+    </p>
+    <div class="thought">
+      Технически он здоров. Анализы в норме. По протоколу — выписка завтра. Но что-то в его голосе...
+    </div>
+    <div class="choice-label">Что ты делаешь?</div>
+    <div class="choices" id="c1">
+      <button class="choice" onclick="choose(1,'a')">
+        <span class="choice-icon">🤝</span>
+        <div>
+          <div class="choice-main">Сесть рядом и поговорить</div>
+          <div class="choice-hint">Спросить что его пугает — даже если это займёт 20 минут</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'b')">
+        <span class="choice-icon">📋</span>
+        <div>
+          <div class="choice-main">Объяснить что здоровье в порядке</div>
+          <div class="choice-hint">Анализы хорошие, волноваться не о чем</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(1,'c')">
+        <span class="choice-icon">👩‍⚕️</span>
+        <div>
+          <div class="choice-main">Позвать социального работника</div>
+          <div class="choice-hint">Это их работа — помогать с такими вопросами</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r1"></div>
+    <button class="continue-btn" id="btn1" onclick="goScene('s2')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene" id="s2">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+      <div class="pdot"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 11:30 утра · Момент 2 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #0f1520, #0a0a0c);">
+      <div class="illus-bg">👩</div>
+      <span style="position:relative; z-index:1;">😰</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      В коридоре тебя останавливает молодая женщина. Её зовут Марина, 32 года. Она пришла на плановый осмотр, но дрожащими руками протягивает телефон — там результаты анализов.<br><br>
+      Один показатель сильно выше нормы. Это может быть просто стресс. А может — что-то серьёзное. Нужны дополнительные исследования, но ждать придётся <em>две недели</em>.<br><br>
+      — Доктор, скажите честно. Это рак?
+    </p>
+    <div class="thought">
+      Ты не знаешь. Правда — ты не знаешь. Но она смотрит на тебя так, будто ты можешь всё изменить одним словом.
+    </div>
+    <div class="choice-label">Что ты говоришь?</div>
+    <div class="choices" id="c2">
+      <button class="choice" onclick="choose(2,'a')">
+        <span class="choice-icon">💬</span>
+        <div>
+          <div class="choice-main">Сказать правду: "Я не знаю пока"</div>
+          <div class="choice-hint">Объяснить что нужны доп. исследования и почему</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'b')">
+        <span class="choice-icon">🌟</span>
+        <div>
+          <div class="choice-main">Успокоить: "Скорее всего это стресс"</div>
+          <div class="choice-hint">Не пугать раньше времени — анализы часто ошибаются</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(2,'c')">
+        <span class="choice-icon">📞</span>
+        <div>
+          <div class="choice-main">Передать старшему врачу</div>
+          <div class="choice-hint">Это сложный случай — лучше пусть решает опытный коллега</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r2"></div>
+    <button class="continue-btn" id="btn2" onclick="goScene('s3')">Дальше →</button>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene" id="s3">
+    <div class="progress">
+      <div class="pdot done"></div>
+      <div class="pdot done"></div>
+      <div class="pdot active"></div>
+    </div>
+    <div class="time-chip"><div class="time-dot"></div> 17:50 вечера · Момент 3 из 3</div>
+    <div class="illus" style="background: linear-gradient(135deg, #1a1508, #0a0a0c);">
+      <div class="illus-bg">🧒</div>
+      <span style="position:relative; z-index:1;">🧒</span>
+    </div>
+    <div class="narrator">Ситуация</div>
+    <p class="story-text">
+      Почти конец смены. Ты не ел с утра. Ноги гудят.<br><br>
+      Вдруг санитар забегает: <strong>"Мальчик, 9 лет. Упал с велосипеда. Сильный удар головой. Родители в панике."</strong><br><br>
+      Ребёнок в сознании, плачет, но отвечает на вопросы. Рядом старший врач — но он разговаривает по телефону и машет рукой: "Ты справишься, посмотри."<br><br>
+      <em>Всё смотрят на тебя.</em>
+    </p>
+    <div class="thought">
+      Ты устал. Ты не уверен. Но вот он — маленький мальчик, смотрит испуганными глазами.
+    </div>
+    <div class="choice-label">Что ты делаешь?</div>
+    <div class="choices" id="c3">
+      <button class="choice" onclick="choose(3,'a')">
+        <span class="choice-icon">🔍</span>
+        <div>
+          <div class="choice-main">Спокойно начать осмотр</div>
+          <div class="choice-hint">Поговорить с ребёнком, проверить реакции, действовать по протоколу</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'b')">
+        <span class="choice-icon">🚨</span>
+        <div>
+          <div class="choice-main">Настоять чтобы старший врач посмотрел</div>
+          <div class="choice-hint">Голова — это серьёзно. Тебе нужна поддержка опытного коллеги</div>
+        </div>
+      </button>
+      <button class="choice" onclick="choose(3,'c')">
+        <span class="choice-icon">🏃</span>
+        <div>
+          <div class="choice-main">Попросить немедленно сделать КТ</div>
+          <div class="choice-hint">Лучше перестраховаться — пусть аппарат покажет правду</div>
+        </div>
+      </button>
+    </div>
+    <div class="reaction" id="r3"></div>
+    <button class="continue-btn" id="btn3" onclick="showResult()">Посмотреть итоги →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="scene" id="sResult">
+    <div class="result-header">
+      <span class="big-emoji" id="resultEmoji">🩺</span>
+      <h1 id="resultTitle">Конец первого дня</h1>
+      <p id="resultDesc"></p>
+    </div>
+
+    <div class="traits">
+      <div class="trait">
+        <div class="trait-label">Эмпатия</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-empathy" id="barEmpathy" style="width:0%"></div></div>
+        <div class="trait-value" id="valEmpathy">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Хладнокровие</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-calm" id="barCalm" style="width:0%"></div></div>
+        <div class="trait-value" id="valCalm">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Решительность</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-decision" id="barDecision" style="width:0%"></div></div>
+        <div class="trait-value" id="valDecision">—</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Стрессоустойчивость</div>
+        <div class="trait-bar-wrap"><div class="trait-bar bar-stress" id="barStress" style="width:0%"></div></div>
+        <div class="trait-value" id="valStress">—</div>
+      </div>
+    </div>
+
+    <div class="truth-box">
+      <h3>🔍 Что на самом деле делают врачи</h3>
+      <ul>
+        <li>80% работы — это общение с людьми, а не лечение болезней</li>
+        <li>Часто нет одного правильного ответа — только лучший из возможных</li>
+        <li>Врачи тоже боятся и устают — это нормально</li>
+        <li>Самое сложное — говорить правду, когда это больно</li>
+        <li>Один хороший разговор может изменить жизнь пациента</li>
+      </ul>
+    </div>
+
+    <div class="truth-box">
+      <h3 id="fitTitle">💭 Подходит ли тебе эта профессия?</h3>
+      <p id="fitText"></p>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">Пройти заново</button>
+  </div>
+
+</div>
+
+<script>
+let choices = {};
+let empathy = 50, calm = 50, decision = 50, stress = 50;
+let mood = 50;
+
+function updateMood() {
+  const fill = document.getElementById('moodFill');
+  fill.style.width = mood + '%';
+  if (mood > 65) fill.style.background = 'var(--accent)';
+  else if (mood > 40) fill.style.background = 'var(--yellow)';
+  else fill.style.background = 'var(--red)';
+}
+
+function startStory() {
+  goScene('s1');
+}
+
+function goScene(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const reactions = {
+  1: {
+    a: { type: 'warm', text: '❤️ Ты провёл с ним 20 минут. Выяснилось — он боится упасть дома и лежать без помощи. Ты позвонил его дочери. Она не знала что отец один. Приедет завтра. Дедушка заплакал от облегчения. Ты тоже едва сдержался.', empathy: +20, calm: +5, decision: 0, stress: +10, mood: +15 },
+    b: { type: 'mixed', text: '📋 Ты объяснил про анализы. Он кивнул. Но когда ты уходил — увидел в зеркало как он снова отвернулся к окну. Технически всё правильно. Но что-то осталось несказанным.', empathy: -5, calm: +10, decision: +5, stress: -5, mood: -5 },
+    c: { type: 'mixed', text: '👩‍⚕️ Социальный работник занята. Придёт через два часа. Ты поступил по протоколу. Но дедушка смотрит в окно. И будет смотреть ещё два часа.', empathy: 0, calm: +10, decision: +10, stress: -10, mood: 0 }
+  },
+  2: {
+    a: { type: 'warm', text: '💬 Марина долго молчала. Потом сказала: "Спасибо что не солгали." Она записалась на исследования. Неопределённость страшна — но ложная надежда хуже. Иногда правда — это и есть забота.', empathy: +15, calm: +15, decision: +10, stress: +5, mood: +10 },
+    b: { type: 'tough', text: '🌟 Она ушла успокоенная. Но через две недели анализы подтвердят диагноз. И она вспомнит твои слова. Доброта была настоящей — но она сыграла против неё.', empathy: +5, calm: +5, decision: -15, stress: -10, mood: -10 },
+    c: { type: 'mixed', text: '📞 Старший врач поговорил с ней. Хорошо. Но ты видел как она смотрела на тебя когда уходила — чуть разочарованно. Просила тебя. Ты перепасовал.', empathy: -5, calm: +10, decision: -10, stress: -15, mood: -5 }
+  },
+  3: {
+    a: { type: 'warm', text: '🔍 Ты присел рядом с мальчиком. "Как тебя зовут?" — "Артём." Проверил зрачки, рефлексы, задал вопросы. Всё в норме. Ушиб, но не опасный. Мама выдохнула. Артём попросил тебя расписаться на его гипсе — у него был сломан палец ещё раньше. Ты засмеялся впервые за весь день.', empathy: +10, calm: +20, decision: +20, stress: +15, mood: +20 },
+    b: { type: 'warm', text: '🚨 Старший врач закончил звонок и подошёл. Осмотрел вместе с тобой. Потом тихо сказал: "Правильно сделал что позвал. Голова — не место для геройства." Ты понял — признать что нужна помощь — тоже мужество.', empathy: +5, calm: +15, decision: +10, stress: +20, mood: +15 },
+    c: { type: 'mixed', text: '🏃 КТ сделали. Всё чисто. Но родители ждали час в страхе. Перестраховка иногда стоит дорого — не деньгами, а временем и нервами. Ты правильно думал о безопасности, но протокол осмотра существует именно для таких случаев.', empathy: +5, calm: +5, decision: +5, stress: 0, mood: 0 }
+  }
+};
+
+function choose(scene, opt) {
+  choices[scene] = opt;
+  const r = reactions[scene][opt];
+
+  empathy = Math.min(100, Math.max(0, empathy + r.empathy));
+  calm = Math.min(100, Math.max(0, calm + r.calm));
+  decision = Math.min(100, Math.max(0, decision + r.decision));
+  stress = Math.min(100, Math.max(0, stress + r.stress));
+  mood = Math.min(100, Math.max(0, mood + r.mood));
+  updateMood();
+
+  document.querySelectorAll(`#c${scene} .choice`).forEach(b => b.disabled = true);
+
+  const reactionEl = document.getElementById(`r${scene}`);
+  reactionEl.className = `reaction show ${r.type}`;
+  reactionEl.textContent = r.text;
+
+  document.getElementById(`btn${scene}`).classList.add('show');
+  reactionEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showResult() {
+  goScene('sResult');
+
+  setTimeout(() => {
+    document.getElementById('barEmpathy').style.width = empathy + '%';
+    document.getElementById('barCalm').style.width = calm + '%';
+    document.getElementById('barDecision').style.width = decision + '%';
+    document.getElementById('barStress').style.width = stress + '%';
+
+    document.getElementById('valEmpathy').textContent = empathy + '%';
+    document.getElementById('valCalm').textContent = calm + '%';
+    document.getElementById('valDecision').textContent = decision + '%';
+    document.getElementById('valStress').textContent = stress + '%';
+  }, 300);
+
+  const total = empathy + calm + decision + stress;
+  let emoji, title, desc, fitText;
+
+  if (empathy >= 65 && decision >= 55) {
+    emoji = '🌟'; title = 'Врач с сердцем и головой';
+    desc = 'Ты умеешь слышать людей и принимать решения. Именно таких врачей пациенты помнят всю жизнь.';
+    fitText = 'Ты проявил и эмпатию, и решительность. Это редкое сочетание. Профессия врача может тебе подойти — особенно если тебе нравится общаться с людьми и ты готов нести ответственность за других.';
+  } else if (empathy >= 65) {
+    emoji = '❤️'; title = 'Врач-гуманист';
+    desc = 'Тебе важны люди, а не только диагнозы. Это твоя сила — и иногда твоя уязвимость.';
+    fitText = 'Ты очень чуткий. Врачи с такими качествами становятся отличными психиатрами, педиатрами или семейными терапевтами. Но важно научиться не выгорать — эмоции врача тоже требуют защиты.';
+  } else if (decision >= 65 && calm >= 60) {
+    emoji = '🧊'; title = 'Врач-профессионал';
+    desc = 'Ты чёткий, хладнокровный, действуешь по протоколу. Именно такие врачи спасают жизни в экстренных ситуациях.';
+    fitText = 'Тебе подойдёт хирургия, реаниматология или скорая помощь — там нужны именно такие люди. Холодная голова в критический момент — это дар.';
+  } else {
+    emoji = '🤔'; title = 'День был непростым';
+    desc = 'Ты сомневался, переживал, иногда перепасовывал. Знаешь что? Все врачи через это проходят.';
+    fitText = 'Медицина — это не для всех, и это нормально. Если тебе было тяжело принимать решения под давлением — возможно стоит попробовать другие профессии. Но если ты чувствовал что хочешь помочь — это важный сигнал.';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('fitText').textContent = fitText;
+}
+
+function restart() {
+  choices = {};
+  empathy = 50; calm = 50; decision = 50; stress = 50; mood = 50;
+  updateMood();
+  document.querySelectorAll('.choice').forEach(b => b.disabled = false);
+  document.querySelectorAll('.reaction').forEach(r => r.className = 'reaction');
+  document.querySelectorAll('.continue-btn').forEach(b => b.className = 'continue-btn');
+  goScene('s0');
+}
+
+updateMood();
+</script>
+</body>
+</html>
