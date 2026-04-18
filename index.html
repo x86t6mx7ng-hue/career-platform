@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карьерная платформа</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #18181c;
+    --border: #2a2a30;
+    --text: #f0f0f0;
+    --muted: #888;
+    --doctor: #3ecf8e;
+    --designer: #a78bfa;
+    --marketer: #fb923c;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 2rem 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .logo span { color: var(--designer); }
+
+  .step-badge {
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+
+  .hero {
+    padding: 5rem 2rem 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--designer);
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card.doctor::before { background: var(--doctor); }
+  .card.designer::before { background: var(--designer); }
+  .card.marketer::before { background: var(--marketer); }
+
+  .card:hover { transform: translateY(-4px); }
+  .card:hover::before { opacity: 1; }
+  .card.doctor:hover { border-color: var(--doctor); }
+  .card.designer:hover { border-color: var(--designer); }
+  .card.marketer:hover { border-color: var(--marketer); }
+  .card.active { transform: translateY(-4px); }
+  .card.active::before { opacity: 1; }
+  .card.doctor.active { border-color: var(--doctor); }
+  .card.designer.active { border-color: var(--designer); }
+  .card.marketer.active { border-color: var(--marketer); }
+
+  .card-emoji { font-size: 2rem; margin-bottom: 12px; display: block; }
+
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .game-item {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .game-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .doctor .game-dot { background: var(--doctor); }
+  .designer .game-dot { background: var(--designer); }
+  .marketer .game-dot { background: var(--marketer); }
+
+  /* Detail panel */
+  .detail {
+    max-width: 800px;
+    margin: 0 auto 4rem;
+    padding: 0 2rem;
+    display: none;
+  }
+  .detail.show { display: block; }
+
+  .detail-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .detail-header p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 480px;
+    margin-top: 6px;
+  }
+
+  .mini-games {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .mini-game {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .mini-game .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .doctor .label { color: var(--doctor); }
+  .designer .label { color: var(--designer); }
+  .marketer .label { color: var(--marketer); }
+
+  .mini-game p { font-size: 13px; color: var(--muted); }
+
+  .start-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    color: #0d0d0f;
+  }
+
+  .start-btn:hover { opacity: 0.85; transform: scale(0.99); }
+  .doctor-btn { background: var(--doctor); }
+  .designer-btn { background: var(--designer); }
+  .marketer-btn { background: var(--marketer); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 12px;
+    color: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">career<span>.</span>play</div>
+  <div class="step-badge">Фаза 1 из 4</div>
+</header>
+
+<div class="hero">
+  <h1>Найди свою<br><em>профессию</em></h1>
+  <p>Пройди мини-игры и узнай, какая карьера подходит именно тебе — через реальные сценарии, а не скучные тесты.</p>
+</div>
+
+<div class="cards">
+
+  <div class="card doctor" onclick="selectCard('doctor', this)">
+    <span class="card-emoji">🏥</span>
+    <h3>Врач</h3>
+    <p>Принимай решения под давлением и спасай жизни каждый день.</p>
+    <div class="games-list">
+      <div class="game-item"><div class="game-dot"></div>Логика — диагноз по симптомам</div>
+      <div class="game-item"><div class="game-dot"></div>Ресурсы — бюджет клиники</div>
+      <div class="game-item"><div class="game-dot"></div>Коммуникация — плохие новости</div>
+      <div class="game-item"><div class="game-dot"></div>Кризис — экстренная ситуация</div>
+    </div>
+  </div>
+
+  <div class="card designer" onclick="selectCard('designer', this)">
+    <span class="card-emoji">🎨</span>
+    <h3>Дизайнер</h3>
+    <p>Создавай продукты, которые любят миллионы людей по всему миру.</p>
+    <div class="games-list">
+      <div class="game-item"><div class="game-dot"></div>Логика — найди UX-проблему</div>
+      <div class="game-item"><div class="game-dot"></div>Ресурсы — приоритеты фич</div>
+      <div class="game-item"><div class="game-dot"></div>Коммуникация — защита концепции</div>
+      <div class="game-item"><div class="game-dot"></div>Кризис — дизайн упал до запуска</div>
+    </div>
+  </div>
+
+  <div class="card marketer" onclick="selectCard('marketer', this)">
+    <span class="card-emoji">📊</span>
+    <h3>Маркетолог</h3>
+    <p>Управляй бюджетами и запускай кампании, которые меняют рынок.</p>
+    <div class="games-list">
+      <div class="game-item"><div class="game-dot"></div>Логика — целевая аудитория</div>
+      <div class="game-item"><div class="game-dot"></div>Ресурсы — бюджет по каналам</div>
+      <div class="game-item"><div class="game-dot"></div>Коммуникация — убеди клиента</div>
+      <div class="game-item"><div class="game-dot"></div>Кризис — кампания провалилась</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Detail panels -->
+<div class="detail" id="detail-doctor">
+  <div class="detail-inner">
+    <div class="detail-header">
+      <div>
+        <h2>🏥 Врач</h2>
+        <p>Ты работаешь в приёмном отделении. Каждое решение влияет на жизнь пациента. Готов справиться с давлением, ограниченными ресурсами и сложными разговорами?</p>
+      </div>
+    </div>
+    <div class="mini-games doctor">
+      <div class="mini-game"><div class="label">Логика</div><p>Поставь диагноз по симптомам за 60 секунд</p></div>
+      <div class="mini-game"><div class="label">Ресурсы</div><p>Распредели бюджет клиники на месяц</p></div>
+      <div class="mini-game"><div class="label">Коммуникация</div><p>Сообщи плохие новости семье пациента</p></div>
+      <div class="mini-game"><div class="label">Кризис</div><p>Экстренная ситуация в 3:00 ночи</p></div>
+    </div>
+    <button class="start-btn doctor-btn" onclick="startGame('doctor')">Начать испытание →</button>
+  </div>
+</div>
+
+<div class="detail" id="detail-designer">
+  <div class="detail-inner">
+    <div class="detail-header">
+      <div>
+        <h2>🎨 Дизайнер</h2>
+        <p>Ты — UX-дизайнер в стартапе. Надо запустить продукт за 2 недели. Успеешь ли ты согласовать с командой, угодить пользователям и уложиться в срок?</p>
+      </div>
+    </div>
+    <div class="mini-games designer">
+      <div class="mini-game"><div class="label">Логика</div><p>Найди главную проблему в интерфейсе</p></div>
+      <div class="mini-game"><div class="label">Ресурсы</div><p>Расставь приоритеты фич на спринт</p></div>
+      <div class="mini-game"><div class="label">Коммуникация</div><p>Защити концепцию перед CEO</p></div>
+      <div class="mini-game"><div class="label">Кризис</div><p>Дизайн упал за час до запуска</p></div>
+    </div>
+    <button class="start-btn designer-btn" onclick="startGame('designer')">Начать испытание →</button>
+  </div>
+</div>
+
+<div class="detail" id="detail-marketer">
+  <div class="detail-inner">
+    <div class="detail-header">
+      <div>
+        <h2>📊 Маркетолог</h2>
+        <p>Ты ведёшь кампанию с бюджетом $10,000. Нужно выбрать каналы, аудиторию и мессидж. Как распределишь ресурсы, чтобы получить максимум конверсий?</p>
+      </div>
+    </div>
+    <div class="mini-games marketer">
+      <div class="mini-game"><div class="label">Логика</div><p>Выбери правильную целевую аудиторию</p></div>
+      <div class="mini-game"><div class="label">Ресурсы</div><p>Раздели бюджет $10,000 по каналам</p></div>
+      <div class="mini-game"><div class="label">Коммуникация</div><p>Убеди клиента в выбранной стратегии</p></div>
+      <div class="mini-game"><div class="label">Кризис</div><p>Кампания провалилась. Что дальше?</p></div>
+    </div>
+    <button class="start-btn marketer-btn" onclick="startGame('marketer')">Начать испытание →</button>
+  </div>
+</div>
+
+<footer>career.play — платформа для подростков © 2025</footer>
+
+<script>
+  let current = null;
+
+  function selectCard(id, el) {
+    if (current === id) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.detail').forEach(d => d.classList.remove('show'));
+      current = null;
+      return;
+    }
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.detail').forEach(d => d.classList.remove('show'));
+    el.classList.add('active');
+    document.getElementById('detail-' + id).classList.add('show');
+    current = id;
+    document.getElementById('detail-' + id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function startGame(profession) {
+    alert('Мини-игра для «' + profession + '» будет здесь!\nДобавь файл game-' + profession + '.html в репозиторий.');
+  }
+</script>
+
+</body>
+</html>
